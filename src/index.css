@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg: #0B0E14;
+  --panel: #141822;
+  --panel-2: #191E2A;
+  --border: #232936;
+  --text: #E8EAED;
+  --muted: #6E7681;
+  --muted-2: #94A0AE;
+  --teal: #5EEAD4;
+  --amber: #F59E0B;
+  --red: #F87171;
+  --radius: 10px;
+}
+
+[data-theme="light"] {
+  --bg: #F4F6F9;
+  --panel: #FFFFFF;
+  --panel-2: #F0F2F5;
+  --border: #E2E6ED;
+  --text: #0B0E14;
+  --muted: #9BA5B4;
+  --muted-2: #6B7685;
+  --teal: #0D9488;
+  --amber: #D97706;
+  --red: #DC2626;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-teal: var(--teal);
+  --color-amber: var(--amber);
+  --color-red: var(--red);
+  --font-sans: 'Inter', sans-serif;
+  --radius: 10px;
+}
+
+/* * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+} */
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.2s, color 0.2s;
+}
