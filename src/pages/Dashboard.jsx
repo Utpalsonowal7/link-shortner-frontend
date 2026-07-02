@@ -400,8 +400,8 @@ const Dashboard = () => {
                                                                  </div>
 
                                                                  <div className="mt-0.5 truncate text-[11px] text-muted">
-                                                                      {click.referer
-                                                                           ? `via ${click.referer}`
+                                                                      {click.referrer
+                                                                           ? `via ${click.referrer}`
                                                                            : "direct"}
                                                                  </div>
                                                             </div>
