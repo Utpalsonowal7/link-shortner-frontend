@@ -50,6 +50,12 @@ const Dashboard = () => {
           dispatch(fetchUserLinks({ page: 1, limit: 20 }));
           dispatch(fetchUserStats());
           dispatch(fetchTopStats());
+
+          const interval = setInterval(() => {
+               dispatch(fetchTopStats());
+          }, 30000);
+
+          return () => clearInterval(interval);
      }, [dispatch]);
 
      const refetch = () => {
@@ -93,7 +99,7 @@ const Dashboard = () => {
           ...topStats?.top5Links?.map((link) => link.totalClicks),
           1,
      );
-     console.log(topStats?.recent5Clikcs);
+
      return (
           <div className="flex min-h-screen bg-bg">
                <Sidebar />
