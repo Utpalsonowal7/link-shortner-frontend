@@ -195,6 +195,88 @@ const Dashboard = () => {
 
                          <div>
                               <h2 className="text-xs text-muted uppercase tracking-wider font-semibold mb-3">
+                                   Recent Links
+                              </h2>
+                              <div className="bg-panel border border-border rounded-xl overflow-hidden">
+                                   {loading ? (
+                                        <div className="flex flex-col divide-y divide-border">
+                                             {[...Array(4)].map((_, i) => (
+                                                  <div
+                                                       key={i}
+                                                       className="px-5 py-4 flex items-center gap-4"
+                                                  >
+                                                       <div className="flex-1 flex flex-col gap-2">
+                                                            <div className="h-3.5 w-36 bg-panel-2 rounded animate-pulse" />
+                                                            <div className="h-3 w-56 bg-panel-2 rounded animate-pulse" />
+                                                       </div>
+                                                       <div className="h-3.5 w-12 bg-panel-2 rounded animate-pulse" />
+                                                       <div className="h-5 w-16 bg-panel-2 rounded-md animate-pulse" />
+                                                       <div className="h-3.5 w-10 bg-panel-2 rounded animate-pulse" />
+                                                  </div>
+                                             ))}
+                                        </div>
+                                   ) : links.length === 0 ? (
+                                        <div className="flex flex-col items-center text-center py-16 px-5">
+                                             <div className="w-12 h-12 rounded-xl bg-panel-2 border border-border flex items-center justify-center mb-4 text-muted">
+                                                  <svg
+                                                       width="22"
+                                                       height="22"
+                                                       viewBox="0 0 24 24"
+                                                       fill="none"
+                                                       stroke="currentColor"
+                                                       strokeWidth="2"
+                                                  >
+                                                       <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
+                                                       <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
+                                                  </svg>
+                                             </div>
+                                             <h3 className="text-text font-bold text-[15px] mb-1.5">
+                                                  No links yet
+                                             </h3>
+                                             <p className="text-muted text-sm max-w-[280px] leading-relaxed">
+                                                  Paste a URL above to create
+                                                  your first short link and
+                                                  start tracking clicks.
+                                             </p>
+                                        </div>
+                                   ) : (
+                                        <table className="w-full border-collapse">
+                                             <thead>
+                                                  <tr>
+                                                       <th className="text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
+                                                            Link
+                                                       </th>
+                                                       <th className="text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
+                                                            Created
+                                                       </th>
+                                                       <th className="text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
+                                                            Status
+                                                       </th>
+                                                       <th className="text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
+                                                            Clicks
+                                                       </th>
+                                                       <th className="px-5 py-3 border-b border-border"></th>
+                                                  </tr>
+                                             </thead>
+                                             <tbody>
+                                                  {links
+                                                       .slice(0, 3)
+                                                       .map((link) => (
+                                                            <LinkRow
+                                                                 key={link.id}
+                                                                 link={link}
+                                                                 onDelete={
+                                                                      handleDelete
+                                                                 }
+                                                            />
+                                                       ))}
+                                             </tbody>
+                                        </table>
+                                   )}
+                              </div>
+                         </div>
+                         <div>
+                              <h2 className="text-xs text-muted uppercase tracking-wider font-semibold mb-3">
                                    Today's Highlights
                               </h2>
                               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
