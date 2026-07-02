@@ -8,65 +8,16 @@ import {
      fetchUserLinks,
      createLink,
      fetchUserStats,
+     fetchTopStats,
 } from "../features/links/linkThunks";
 import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
 import LinkRow from "../components/links/LinkRow";
 import LinkCreatedModal from "../components/links/LinkCreatedModal";
-
-// ── Stat card with optional delta badge ──
-const StatCard = ({ label, value, delta, loading }) => (
-     <div className="bg-panel border border-border rounded-xl p-5">
-          <div className="text-xs text-muted uppercase tracking-wider font-semibold mb-3">
-               {label}
-          </div>
-          {loading ? (
-               <div className="h-8 w-24 bg-panel-2 rounded-lg animate-pulse" />
-          ) : (
-               <div className="flex items-baseline gap-2.5">
-                    <div className="font-mono text-[26px] font-semibold text-text leading-none">
-                         {value ?? "—"}
-                    </div>
-                    {delta !== null && delta !== undefined && (
-                         <span
-                              className={`text-xs font-semibold ${delta >= 0 ? "text-teal" : "text-red"}`}
-                         >
-                              {delta >= 0 ? "▲" : "▼"} {Math.abs(delta)}
-                              {typeof delta === "number" ? "%" : ""}
-                         </span>
-                    )}
-               </div>
-          )}
-     </div>
-);
-
-// ── Today's highlight card ──
-const HighlightCard = ({ label, icon, title, sub, loading }) => (
-     <div className="bg-panel border border-border rounded-xl p-5">
-          <div className="text-xs text-muted uppercase tracking-wider font-semibold mb-3">
-               {label}
-          </div>
-          {loading ? (
-               <div className="flex flex-col gap-2">
-                    <div className="h-6 w-6 bg-panel-2 rounded animate-pulse" />
-                    <div className="h-4 w-32 bg-panel-2 rounded animate-pulse" />
-                    <div className="h-3 w-24 bg-panel-2 rounded animate-pulse" />
-               </div>
-          ) : title ? (
-               <>
-                    <div className="text-xl mb-1.5">{icon}</div>
-                    <div className="font-mono text-sm font-bold text-text truncate">
-                         {title}
-                    </div>
-                    <div className="text-xs text-teal mt-1 font-mono">
-                         {sub}
-                    </div>
-               </>
-          ) : (
-               <div className="text-sm text-muted mt-2">No data yet</div>
-          )}
-     </div>
-);
+import StatCard from "../components/ui/StatsCards.jsx";
+import HighlightCard from "../components/ui/HighLightCard.jsx";
+import TopLinkRow from "../components/links/TopLinksRow.jsx";
+import { timeAgo } from "../utils/time.js";
 
 const Dashboard = () => {
      useTitle("Dashboard — Snip");
@@ -75,6 +26,7 @@ const Dashboard = () => {
           links,
           pagination,
           stats,
+          topStats,
           loading,
           statsLoading,
           createLoading,
@@ -86,8 +38,18 @@ const Dashboard = () => {
      const [createdLink, setCreatedLink] = useState(null);
 
      useEffect(() => {
+          const longUrl = sessionStorage.getItem("pendingUrl");
+
+          if (longUrl) {
+               setLongUrl(longUrl);
+               sessionStorage.removeItem("pendingUrl");
+          }
+     }, []);
+
+     useEffect(() => {
           dispatch(fetchUserLinks({ page: 1, limit: 20 }));
           dispatch(fetchUserStats());
+          dispatch(fetchTopStats());
      }, [dispatch]);
 
      const refetch = () => {
@@ -127,7 +89,11 @@ const Dashboard = () => {
      };
 
      const h = stats?.highlights;
-
+     const maxClicks = Math.max(
+          ...topStats?.top5Links?.map((link) => link.totalClicks),
+          1,
+     );
+     console.log(topStats?.recent5Clikcs);
      return (
           <div className="flex min-h-screen bg-bg">
                <Sidebar />
@@ -154,7 +120,6 @@ const Dashboard = () => {
                     />
 
                     <div className="px-8 py-7 flex flex-col gap-6">
-                         {/* Stat cards */}
                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
                               <StatCard
                                    label="Total Clicks"
@@ -182,7 +147,6 @@ const Dashboard = () => {
                               />
                          </div>
 
-                         {/* Create bar */}
                          <form
                               onSubmit={handleCreate}
                               className="bg-panel border border-border rounded-xl p-3 flex gap-2.5 items-center flex-col sm:flex-row"
@@ -223,7 +187,6 @@ const Dashboard = () => {
                               </button>
                          </form>
 
-                         {/* Today's highlights */}
                          <div>
                               <h2 className="text-xs text-muted uppercase tracking-wider font-semibold mb-3">
                                    Today's Highlights
@@ -276,90 +239,204 @@ const Dashboard = () => {
                               </div>
                          </div>
 
-                         {/* Links table */}
-                         <div className="bg-panel border border-border rounded-xl overflow-hidden">
-                              <div className="px-5 py-4 border-b border-border flex justify-between items-center">
-                                   <h2 className="text-sm font-bold text-text">
-                                        Your links
-                                   </h2>
-                                   {!loading && (
-                                        <span className="text-xs text-muted font-mono">
-                                             {pagination.total} total
-                                        </span>
+                         <div className="flex flex-col lg:flex-row gap-2">
+                              <div className="bg-panel border border-border rounded-xl overflow-hidden w-[50%]">
+                                   <div className="px-5 py-4 border-b border-border flex justify-between items-center">
+                                        <h2 className="text-sm font-bold text-text">
+                                             Top Links
+                                        </h2>
+
+                                        <h6 className="text-xs text-muted font-mono">
+                                             by clikcs
+                                        </h6>
+                                   </div>
+
+                                   {loading ? (
+                                        <div className="flex flex-col divide-y divide-border">
+                                             {[...Array(4)].map((_, i) => (
+                                                  <div
+                                                       key={i}
+                                                       className="px-5 py-4 flex items-center gap-4"
+                                                  >
+                                                       <div className="flex-1 flex flex-col gap-2">
+                                                            <div className="h-3.5 w-36 bg-panel-2 rounded animate-pulse" />
+                                                            <div className="h-3 w-56 bg-panel-2 rounded animate-pulse" />
+                                                       </div>
+                                                       <div className="h-3.5 w-12 bg-panel-2 rounded animate-pulse" />
+                                                       <div className="h-5 w-16 bg-panel-2 rounded-md animate-pulse" />
+                                                       <div className="h-3.5 w-10 bg-panel-2 rounded animate-pulse" />
+                                                  </div>
+                                             ))}
+                                        </div>
+                                   ) : links.length === 0 ? (
+                                        <div className="flex flex-col items-center text-center py-16 px-5">
+                                             <div className="w-12 h-12 rounded-xl bg-panel-2 border border-border flex items-center justify-center mb-4 text-muted">
+                                                  <svg
+                                                       width="22"
+                                                       height="22"
+                                                       viewBox="0 0 24 24"
+                                                       fill="none"
+                                                       stroke="currentColor"
+                                                       strokeWidth="2"
+                                                  >
+                                                       <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
+                                                       <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
+                                                  </svg>
+                                             </div>
+                                             <h3 className="text-text font-bold text-[15px] mb-1.5">
+                                                  No links yet
+                                             </h3>
+                                             <p className="text-muted text-sm max-w-[280px] leading-relaxed">
+                                                  Paste a URL above to create
+                                                  your first short link and
+                                                  start tracking clicks.
+                                             </p>
+                                        </div>
+                                   ) : (
+                                        <table className="w-full border-collapse">
+                                             <thead>
+                                                  <tr>
+                                                       <th className=" text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
+                                                            Link
+                                                       </th>
+                                                       <th className=" text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
+                                                            ENGAGEMENTS
+                                                       </th>
+
+                                                       <th className="text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
+                                                            Clicks
+                                                       </th>
+                                                  </tr>
+                                             </thead>
+
+                                             <tbody>
+                                                  {topStats?.top5Links?.map(
+                                                       (link) => (
+                                                            <TopLinkRow
+                                                                 key={link.id}
+                                                                 link={link}
+                                                                 maxClicks={
+                                                                      maxClicks
+                                                                 }
+                                                            />
+                                                       ),
+                                                  )}
+                                             </tbody>
+                                        </table>
                                    )}
                               </div>
+                              <div className="bg-panel border border-border rounded-xl overflow-hidden w-[50%]">
+                                   <div className="px-5 py-4 border-b border-border flex justify-between items-center">
+                                        <h2 className="text-sm font-bold text-text">
+                                             Recent clicks
+                                        </h2>
 
-                              {loading ? (
-                                   <div className="flex flex-col divide-y divide-border">
-                                        {[...Array(4)].map((_, i) => (
-                                             <div
-                                                  key={i}
-                                                  className="px-5 py-4 flex items-center gap-4"
-                                             >
-                                                  <div className="flex-1 flex flex-col gap-2">
-                                                       <div className="h-3.5 w-36 bg-panel-2 rounded animate-pulse" />
-                                                       <div className="h-3 w-56 bg-panel-2 rounded animate-pulse" />
+                                        <h6 className="text-xs text-muted font-mono">
+                                             live
+                                        </h6>
+                                   </div>
+
+                                   {loading ? (
+                                        <div className="flex flex-col divide-y divide-border">
+                                             {[...Array(4)].map((_, i) => (
+                                                  <div
+                                                       key={i}
+                                                       className="px-5 py-4 flex items-center gap-4"
+                                                  >
+                                                       <div className="flex-1 flex flex-col gap-2">
+                                                            <div className="h-3.5 w-36 bg-panel-2 rounded animate-pulse" />
+                                                            <div className="h-3 w-56 bg-panel-2 rounded animate-pulse" />
+                                                       </div>
+                                                       <div className="h-3.5 w-12 bg-panel-2 rounded animate-pulse" />
+                                                       <div className="h-5 w-16 bg-panel-2 rounded-md animate-pulse" />
+                                                       <div className="h-3.5 w-10 bg-panel-2 rounded animate-pulse" />
                                                   </div>
-                                                  <div className="h-3.5 w-12 bg-panel-2 rounded animate-pulse" />
-                                                  <div className="h-5 w-16 bg-panel-2 rounded-md animate-pulse" />
-                                                  <div className="h-3.5 w-10 bg-panel-2 rounded animate-pulse" />
-                                             </div>
-                                        ))}
-                                   </div>
-                              ) : links.length === 0 ? (
-                                   <div className="flex flex-col items-center text-center py-16 px-5">
-                                        <div className="w-12 h-12 rounded-xl bg-panel-2 border border-border flex items-center justify-center mb-4 text-muted">
-                                             <svg
-                                                  width="22"
-                                                  height="22"
-                                                  viewBox="0 0 24 24"
-                                                  fill="none"
-                                                  stroke="currentColor"
-                                                  strokeWidth="2"
-                                             >
-                                                  <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
-                                                  <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
-                                             </svg>
-                                        </div>
-                                        <h3 className="text-text font-bold text-[15px] mb-1.5">
-                                             No links yet
-                                        </h3>
-                                        <p className="text-muted text-sm max-w-[280px] leading-relaxed">
-                                             Paste a URL above to create your
-                                             first short link and start tracking
-                                             clicks.
-                                        </p>
-                                   </div>
-                              ) : (
-                                   <table className="w-full border-collapse">
-                                        <thead>
-                                             <tr>
-                                                  <th className="text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
-                                                       Link
-                                                  </th>
-                                                  <th className="text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
-                                                       Created
-                                                  </th>
-                                                  <th className="text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
-                                                       Status
-                                                  </th>
-                                                  <th className="text-left text-[11px] text-muted uppercase tracking-wide font-semibold px-5 py-3 border-b border-border">
-                                                       Clicks
-                                                  </th>
-                                                  <th className="px-5 py-3 border-b border-border"></th>
-                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                             {links.map((link) => (
-                                                  <LinkRow
-                                                       key={link.id}
-                                                       link={link}
-                                                       onDelete={handleDelete}
-                                                  />
                                              ))}
-                                        </tbody>
-                                   </table>
-                              )}
+                                        </div>
+                                   ) : links.length === 0 ? (
+                                        <div className="flex flex-col items-center text-center py-16 px-5">
+                                             <div className="w-12 h-12 rounded-xl bg-panel-2 border border-border flex items-center justify-center mb-4 text-muted">
+                                                  <svg
+                                                       width="22"
+                                                       height="22"
+                                                       viewBox="0 0 24 24"
+                                                       fill="none"
+                                                       stroke="currentColor"
+                                                       strokeWidth="2"
+                                                  >
+                                                       <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
+                                                       <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
+                                                  </svg>
+                                             </div>
+                                             <h3 className="text-text font-bold text-[15px] mb-1.5">
+                                                  No links yet
+                                             </h3>
+                                             <p className="text-muted text-sm max-w-[280px] leading-relaxed">
+                                                  Paste a URL above to create
+                                                  your first short link and
+                                                  start tracking clicks.
+                                             </p>
+                                        </div>
+                                   ) : (
+                                        <div className="divide-y divide-border">
+                                             {topStats?.recent5Clikcs?.map(
+                                                  (click) => (
+                                                       <div
+                                                            key={click.id}
+                                                            className="grid grid-cols-[12px_140px_1fr_100px_70px] items-center gap-5 px-5 py-2"
+                                                       >
+                                                            <div className="flex justify-center">
+                                                                 <span className="w-2 h-2 rounded-full bg-teal opacity-90" />
+                                                            </div>
+
+                                                            <div className="min-w-0">
+                                                                 <div className="font-mono font-semibold text-teal text-[13px] truncate">
+                                                                      /
+                                                                      {
+                                                                           click
+                                                                                .link
+                                                                                ?.shortCode
+                                                                      }
+                                                                 </div>
+
+                                                                 <div className="mt-0.5 truncate text-[11px] text-muted">
+                                                                      {click.referer
+                                                                           ? `via ${click.referer}`
+                                                                           : "direct"}
+                                                                 </div>
+                                                            </div>
+
+                                                            <div className="truncate text-[13px] text-muted-2">
+                                                                 📍{" "}
+                                                                 {click.region &&
+                                                                 click.country
+                                                                      ? `${click.region}, ${click.country.slice(0, 2).toUpperCase()}`
+                                                                      : click.country
+                                                                             ?.slice(
+                                                                                  0,
+                                                                                  2,
+                                                                             )
+                                                                             .toUpperCase() ||
+                                                                        click.region ||
+                                                                        "Unknown"}
+                                                            </div>
+
+                                                            <div className="truncate text-right text-[13px] font-medium text-orange-400">
+                                                                 {click.browser ||
+                                                                      "Unknown"}
+                                                            </div>
+
+                                                            <div className="whitespace-nowrap text-right font-mono text-[12px] text-muted">
+                                                                 {timeAgo(
+                                                                      click.timestamp,
+                                                                 )}
+                                                            </div>
+                                                       </div>
+                                                  ),
+                                             )}
+                                        </div>
+                                   )}
+                              </div>
                          </div>
                     </div>
                </main>

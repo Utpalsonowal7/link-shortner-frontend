@@ -86,3 +86,17 @@ export const fetchUserStats = createAsyncThunk(
           }
      },
 );
+
+export const fetchTopStats = createAsyncThunk(
+     "links/topStats",
+     async (_, { rejectWithValue }) => {
+          try {
+               const res = await api.get("/stats/top-stats");
+               return res.data.data;
+          } catch (err) {
+               return rejectWithValue(
+                    err.response?.data?.message || "Failed to fetch stats",
+               );
+          }
+     },
+);

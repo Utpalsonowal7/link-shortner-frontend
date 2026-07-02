@@ -6,6 +6,7 @@ import {
      deleteLink,
      fetchLinkAnalytics,
      fetchUserStats,
+     fetchTopStats,
 } from "./linkThunks";
 
 const initialState = {
@@ -14,11 +15,13 @@ const initialState = {
      currentLink: null,
      analytics: null,
      stats: null,
+     topStats: { top5Links: [], recent5Clikcs: [] },
 
      loading: false,
      createLoading: false,
      analyticsLoading: false,
      statsLoading: false,
+     topStatsLoading: false,
 
      error: null,
 };
@@ -80,8 +83,6 @@ const linkSlice = createSlice({
                     state.error = action.payload;
                })
 
-              
-
                // delete
                .addCase(deleteLink.fulfilled, (state, action) => {
                     state.links = state.links.filter(
@@ -116,6 +117,20 @@ const linkSlice = createSlice({
                     state.stats = action.payload;
                })
                .addCase(fetchUserStats.rejected, (state, action) => {
+                    state.statsLoading = false;
+                    state.error = action.payload;
+               })
+
+               //top stats
+               .addCase(fetchTopStats.pending, (state) => {
+                    state.topStatsLoading = true;
+                    state.error = null;
+               })
+               .addCase(fetchTopStats.fulfilled, (state, action) => {
+                    state.topStatLoading = false;
+                    state.topStats = action.payload;
+               })
+               .addCase(fetchTopStats.rejected, (state, action) => {
                     state.statsLoading = false;
                     state.error = action.payload;
                });

@@ -20,16 +20,15 @@ const Landing = () => {
      const [demoUrl, setDemoUrl] = useState("");
      const [stats, setStats] = useState(null);
 
-     // soft redirect — page renders immediately, only swaps to dashboard
-     // once the background getCurrentUser() call (in App.jsx) confirms a session exists
+   
      useEffect(() => {
           if (user) {
                navigate("/dashboard", { replace: true });
           }
      }, [user, navigate]);
 
-     // public stats for the footer — no auth needed, fails silently if it errors
      useEffect(() => {
+          console.log("fetching data at app mount.....");
           api.get("/stats")
                .then((res) => setStats(res.data.data))
                .catch(() => setStats(null));
@@ -45,7 +44,8 @@ const Landing = () => {
 
           try {
                new URL(demoUrl);
-               navigate("/register", { state: { url: demoUrl } });
+               sessionStorage.setItem("pendingUrl", demoUrl)
+               navigate("/register");
           } catch (error) {
                toast.error("Invalid url type");
           }
@@ -53,7 +53,7 @@ const Landing = () => {
 
      return (
           <div className="min-h-screen bg-bg flex flex-col">
-               {/* Nav */}
+
                <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-bg/80 backdrop-blur-xl">
                     <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-5">
                          <div className="flex items-center gap-2.5 font-bold text-lg tracking-tight">
@@ -99,9 +99,9 @@ const Landing = () => {
                     </div>
                </nav>
 
-               {/* spacer for fixed nav */}
+             
                <div className="flex-1">
-                    {/* Hero */}
+                  
                     <div className="px-6 pt-32 pb-14 max-w-[980px] mx-auto text-center">
                          <div className="flex items-center justify-center gap-2 text-teal text-xs font-mono uppercase tracking-[0.12em] mb-5">
                               <span className="w-1.5 h-1.5 rounded-full bg-teal shadow-[0_0_0_4px_rgba(94,234,212,0.15)]" />
@@ -137,7 +137,7 @@ const Landing = () => {
                               </Link>
                          </div>
 
-                         {/* Demo shorten bar */}
+                       
                          <form
                               onSubmit={handleDemoSubmit}
                               className="max-w-[640px] mx-auto bg-panel border border-border rounded-xl p-1.5 flex gap-1.5 mb-6"
@@ -162,7 +162,7 @@ const Landing = () => {
                          </p>
                     </div>
 
-                    {/* Why Us */}
+                
                     <div
                          id="features"
                          className="max-w-[980px] mx-auto px-6 pb-24"
@@ -223,7 +223,7 @@ const Landing = () => {
                          </div>
                     </div>
 
-                    {/* Stats */}
+                   
                     <div className="max-w-[980px] mx-auto px-6 pb-24">
                          <div className="text-center mb-8">
                               <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
@@ -261,7 +261,7 @@ const Landing = () => {
                          </div>
                     </div>
 
-                    {/* CTA band */}
+                    
                     <div className="max-w-[980px] mx-auto px-6 py-24 text-center">
                          <h2 className="text-3xl sm:text-[42px] font-extrabold tracking-tight mb-4">
                               Ready to see where your clicks come from?
@@ -279,7 +279,7 @@ const Landing = () => {
                     </div>
                </div>
 
-               {/* Footer */}
+              
                <footer className="border-t border-border">
                     <div className="max-w-7xl mx-auto px-6 py-14">
                          <div className="grid sm:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10 mb-12">
@@ -298,7 +298,6 @@ const Landing = () => {
                                    </p>
                               </div>
 
-                              {/* Product */}
                               <div>
                                    <h4 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">
                                         Product
@@ -339,7 +338,6 @@ const Landing = () => {
                                    </ul>
                               </div>
 
-                              {/* Company */}
                               <div>
                                    <h4 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">
                                         Company
@@ -372,7 +370,7 @@ const Landing = () => {
                                    </ul>
                               </div>
 
-                              {/* Legal */}
+                      
                               <div>
                                    <h4 className="text-xs font-semibold text-muted uppercase tracking-wide mb-4">
                                         Legal

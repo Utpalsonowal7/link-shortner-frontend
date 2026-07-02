@@ -16,6 +16,7 @@ const useLinks = () => {
           currentLink: state.currentLink ?? null,
           analytics: state.analytics ?? null,
           stats: state.stats ?? null,
+          topStats: state.topStats ?? null,
           loading: state.loading,
           createLoading: state.createLoading,
           analyticsLoading: state.analyticsLoading,
