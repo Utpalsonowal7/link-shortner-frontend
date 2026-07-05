@@ -21,7 +21,7 @@ const LinkDetail = () => {
      const [range, setRange] = useState("7d");
      const [copied, setCopied] = useState(false);
      const [toggling, setToggling] = useState(false);
-
+console.log(analytics);
      useTitle(
           analytics?.link
                ? `${analytics.link.shortCode} — Snip`
@@ -72,6 +72,7 @@ const LinkDetail = () => {
 
      const link = analytics?.link;
      const timeSeries = analytics?.timeSeries ?? [];
+     console.log(timeSeries);
      const totalClicks = analytics?.totalClicks ?? 0;
      const clicksToday = analytics?.clicksToday ?? 0;
      const avgPerDay = analytics?.avgPerDay ?? 0;
