@@ -8,13 +8,14 @@ import Dashboard from "../pages/Dashboard";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
 import ResetPassword from "../pages/ResetPassword.jsx";
 import Landing from "../pages/Landing.jsx";
+import Links from "../pages/Links.jsx";
+import LinkDetail from "../pages/LinkDetail.jsx";
 
 const AppRoutes = () => {
      const { user } = useSelector((state) => state.auth);
 
      return (
           <Routes>
-               {/* Public routes — redirect to dashboard if already logged in */}
                <Route path="/" element={<Landing />} />
                <Route
                     path="/login"
@@ -63,7 +64,6 @@ const AppRoutes = () => {
                     }
                />
 
-               {/* Protected routes */}
                <Route
                     path="/dashboard"
                     element={
@@ -73,14 +73,28 @@ const AppRoutes = () => {
                     }
                />
 
-             
+               <Route
+                    path="/links"
+                    element={
+                         <ProtectedRoute>
+                              <Links />
+                         </ProtectedRoute>
+                    }
+               />
+
+               <Route
+                    path="/links/:id"
+                    element={
+                         <ProtectedRoute>
+                              <LinkDetail />
+                         </ProtectedRoute>
+                    }
+               />
+
                <Route
                     path="*"
                     element={
-                         <Navigate
-                              to={user ? "/dashboard" : "/"}
-                              replace
-                         />
+                         <Navigate to={user ? "/dashboard" : "/"} replace />
                     }
                />
           </Routes>

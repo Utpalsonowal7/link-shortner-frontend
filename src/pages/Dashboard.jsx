@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import useLinks from "../hooks/useLinks";
 import useTitle from "../hooks/useTitle";
@@ -22,6 +22,9 @@ import { timeAgo } from "../utils/time.js";
 const Dashboard = () => {
      useTitle("Dashboard — Snip");
      const dispatch = useDispatch();
+     const location = useLocation();
+     const inputRef = useRef();
+
      const {
           links,
           pagination,
@@ -32,7 +35,7 @@ const Dashboard = () => {
           createLoading,
           clearError,
      } = useLinks();
-
+     
      const [longUrl, setLongUrl] = useState("");
      const [customCode, setCustomCode] = useState("");
      const [createdLink, setCreatedLink] = useState(null);
@@ -47,13 +50,23 @@ const Dashboard = () => {
      }, []);
 
      useEffect(() => {
+          if (location.state?.focus === "inputUrl") {
+               inputRef.current?.focus();
+               inputRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+               });
+          }
+     }, [location]);
+
+     useEffect(() => {
           dispatch(fetchUserLinks({ page: 1, limit: 20 }));
           dispatch(fetchUserStats());
           dispatch(fetchTopStats());
 
           const interval = setInterval(() => {
                dispatch(fetchTopStats());
-          }, 30000);
+          }, 5000);
 
           return () => clearInterval(interval);
      }, [dispatch]);
@@ -162,6 +175,7 @@ const Dashboard = () => {
                                    required
                                    placeholder="https://your-long-url.com/goes-here"
                                    value={longUrl}
+                                   ref={inputRef}
                                    onChange={(e) => {
                                         clearError();
                                         setLongUrl(e.target.value);
@@ -273,6 +287,14 @@ const Dashboard = () => {
                                              </tbody>
                                         </table>
                                    )}
+                                   <div className="text-center border rounded-md py-1.5 m-2 outline-none border-border hover:border-muted-2 cursor-pointer">
+                                        <Link
+                                             to="/links"
+                                             className="text-sm text-text font-medium"
+                                        >
+                                             View all links →
+                                        </Link>
+                                   </div>
                               </div>
                          </div>
                          <div>
