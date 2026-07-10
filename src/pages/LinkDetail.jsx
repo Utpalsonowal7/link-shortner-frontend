@@ -512,9 +512,9 @@ console.log(analytics);
                                    ) : (
                                         byContinent.map((c, i) => (
                                              <BreakdownRow
-                                                  key={c.continent}
-                                                  label={c.continent}
-                                                  count={c._count.continent}
+                                                  key={c.city}
+                                                  label={c.city}
+                                                  count={c._count.city}
                                                   total={totalClicks}
                                                   dotColor={
                                                        continentColors[i] ||
@@ -536,9 +536,9 @@ console.log(analytics);
                                    ) : (
                                         byRegion.map((c, i) => (
                                              <BreakdownRow
-                                                  key={c.continent}
-                                                  label={c.continent}
-                                                  count={c._count.continent}
+                                                  key={c.region}
+                                                  label={c.region}
+                                                  count={c._count.region}
                                                   total={totalClicks}
                                                   dotColor={
                                                        continentColors[i] ||
