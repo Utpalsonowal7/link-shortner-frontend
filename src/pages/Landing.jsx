@@ -28,7 +28,6 @@ const Landing = () => {
      }, [user, navigate]);
 
      useEffect(() => {
-          console.log("fetching data at app mount.....");
           api.get("/stats")
                .then((res) => setStats(res.data.data))
                .catch(() => setStats(null));

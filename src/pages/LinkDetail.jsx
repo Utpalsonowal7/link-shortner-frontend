@@ -12,6 +12,8 @@ import Toggle from "../components/ui/Toggle.jsx";
 import BreakdownRow from "../components/ui/BreakdownRow.jsx";
 import BarChart from "../components/ui/BarChart.jsx";
 import QRPlaceholder from "../components/links/QRPlaceHolder.jsx";
+import DonutChart from "../components/ui/PiChart.jsx";
+import DonutSkeleton from "../components/ui/DonutSkeleton.jsx";
 
 const LinkDetail = () => {
      const { id } = useParams();
@@ -405,30 +407,21 @@ console.log(analytics);
                                         Top Countries
                                    </div>
                                    {analyticsLoading ? (
-                                        <div className="flex flex-col gap-3">
-                                             {[...Array(4)].map((_, i) => (
-                                                  <div
-                                                       key={i}
-                                                       className="h-4 bg-panel-2 rounded animate-pulse"
-                                                  />
-                                             ))}
-                                        </div>
+                                        <DonutSkeleton />
                                    ) : byCountry.length === 0 ? (
                                         <div className="text-sm text-muted">
                                              No data yet
                                         </div>
                                    ) : (
-                                        byCountry
-                                             .slice(0, 5)
-                                             .map((c) => (
-                                                  <BreakdownRow
-                                                       key={c.country}
-                                                       label={c.country}
-                                                       count={c._count.country}
-                                                       total={totalClicks}
-                                                       dotColor="bg-teal"
-                                                  />
-                                             ))
+                                        <DonutChart
+                                             data={byCountry
+                                                  .slice(0, 5)
+                                                  .map((c) => ({
+                                                       label: c.country,
+                                                       count: c._count.country,
+                                                  }))}
+                                             total={totalClicks}
+                                        />
                                    )}
                               </div>
 
