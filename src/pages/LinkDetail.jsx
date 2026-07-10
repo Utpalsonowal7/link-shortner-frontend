@@ -23,7 +23,7 @@ const LinkDetail = () => {
      const [range, setRange] = useState("7d");
      const [copied, setCopied] = useState(false);
      const [toggling, setToggling] = useState(false);
-console.log(analytics);
+
      useTitle(
           analytics?.link
                ? `${analytics.link.shortCode} — Snip`
@@ -324,48 +324,6 @@ console.log(analytics);
                                    delta={null}
                               />
                          </div>
-
-                         {/* Live click stream */}
-                         {recent.length > 0 && (
-                              <div className="bg-panel border border-border rounded-xl overflow-hidden">
-                                   <div className="px-4 py-2.5 border-b border-border flex items-center gap-2 text-xs text-muted uppercase tracking-wider font-semibold">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse" />
-                                        Live click stream
-                                   </div>
-                                   <div className="overflow-hidden">
-                                        {recent.slice(0, 6).map((click, i) => (
-                                             <div
-                                                  key={i}
-                                                  className="flex items-center gap-4 px-4 py-2 border-b border-border/50 last:border-0 font-mono text-xs text-muted-2"
-                                             >
-                                                  <span className="text-muted w-8 flex-shrink-0">
-                                                       now
-                                                  </span>
-                                                  <span className="text-text w-32 flex-shrink-0 truncate">
-                                                       📍{" "}
-                                                       {[
-                                                            click.city,
-                                                            click.country,
-                                                       ]
-                                                            .filter(Boolean)
-                                                            .join(", ") ||
-                                                            "Unknown"}
-                                                  </span>
-                                                  <span className="text-amber w-28 flex-shrink-0 truncate">
-                                                       {[click.device, click.os]
-                                                            .filter(Boolean)
-                                                            .join("/") || "—"}
-                                                  </span>
-                                                  <span className="flex-1 text-right truncate">
-                                                       via{" "}
-                                                       {click.referrer ||
-                                                            "direct"}
-                                                  </span>
-                                             </div>
-                                        ))}
-                                   </div>
-                              </div>
-                         )}
 
                          {/* Charts row */}
                          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto] gap-4">

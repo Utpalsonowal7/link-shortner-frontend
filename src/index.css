@@ -55,3 +55,25 @@ body {
   color: var(--text);
   transition: background-color 0.2s, color 0.2s;
 }
+
+@keyframes donut-sweep {
+  from {
+    stroke-dashoffset: var(--dash-total);
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes donut-slice-in {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
