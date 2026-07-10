@@ -505,12 +505,12 @@ console.log(analytics);
                                    <div className="text-xs text-muted uppercase tracking-wide font-semibold mb-4">
                                         Top Cities
                                    </div>
-                                   {byContinent.length === 0 ? (
+                                   {byCities.length === 0 ? (
                                         <div className="text-sm text-muted">
                                              No data yet
                                         </div>
                                    ) : (
-                                        byContinent.map((c, i) => (
+                                        byCities.map((c, i) => (
                                              <BreakdownRow
                                                   key={c.city}
                                                   label={c.city}
@@ -529,7 +529,7 @@ console.log(analytics);
                                    <div className="text-xs text-muted uppercase tracking-wide font-semibold mb-4">
                                         Top Region
                                    </div>
-                                   {byContinent.length === 0 ? (
+                                   {byRegion.length === 0 ? (
                                         <div className="text-sm text-muted">
                                              No data yet
                                         </div>
