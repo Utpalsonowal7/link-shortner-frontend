@@ -137,7 +137,7 @@ const DonutChart = ({ data, total }) => {
                               className="hover:opacity-100 transition-opacity cursor-pointer"
                          >
                               <title>
-                                   {s.label}: {s.percent}%
+                                   {s.label}: {s.count}
                               </title>
                          </path>
                     ))}

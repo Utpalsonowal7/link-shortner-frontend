@@ -23,7 +23,7 @@ const LinkDetail = () => {
      const [range, setRange] = useState("7d");
      const [copied, setCopied] = useState(false);
      const [toggling, setToggling] = useState(false);
-
+console.log(analytics);
      useTitle(
           analytics?.link
                ? `${analytics.link.shortCode} — Snip`
@@ -74,7 +74,6 @@ const LinkDetail = () => {
 
      const link = analytics?.link;
      const timeSeries = analytics?.timeSeries ?? [];
-     console.log(timeSeries);
      const totalClicks = analytics?.totalClicks ?? 0;
      const clicksToday = analytics?.clicksToday ?? 0;
      const avgPerDay = analytics?.avgPerDay ?? 0;
@@ -83,6 +82,8 @@ const LinkDetail = () => {
      const byDevice = analytics?.clicksByDevice ?? [];
      const byOs = analytics?.clicksByOs ?? [];
      const byContinent = analytics?.clicksByContinent ?? [];
+     const byCities = analytics?.clicksByCities ?? [];
+     const byRegion = analytics?.clicksByRegion ?? [];
      const recent = topStats?.recent5Clikcs ?? [];
 
      // referrer from recentClicks
@@ -486,6 +487,54 @@ const LinkDetail = () => {
                                         </div>
                                    ) : (
                                         byContinent.map((c, i) => (
+                                             <BreakdownRow
+                                                  key={c.continent}
+                                                  label={c.continent}
+                                                  count={c._count.continent}
+                                                  total={totalClicks}
+                                                  dotColor={
+                                                       continentColors[i] ||
+                                                       "bg-muted-2"
+                                                  }
+                                             />
+                                        ))
+                                   )}
+                              </div>
+
+                              <div className="bg-panel border border-border rounded-xl p-5">
+                                   <div className="text-xs text-muted uppercase tracking-wide font-semibold mb-4">
+                                        Top Cities
+                                   </div>
+                                   {byContinent.length === 0 ? (
+                                        <div className="text-sm text-muted">
+                                             No data yet
+                                        </div>
+                                   ) : (
+                                        byContinent.map((c, i) => (
+                                             <BreakdownRow
+                                                  key={c.continent}
+                                                  label={c.continent}
+                                                  count={c._count.continent}
+                                                  total={totalClicks}
+                                                  dotColor={
+                                                       continentColors[i] ||
+                                                       "bg-muted-2"
+                                                  }
+                                             />
+                                        ))
+                                   )}
+                              </div>
+
+                              <div className="bg-panel border border-border rounded-xl p-5">
+                                   <div className="text-xs text-muted uppercase tracking-wide font-semibold mb-4">
+                                        Top Region
+                                   </div>
+                                   {byContinent.length === 0 ? (
+                                        <div className="text-sm text-muted">
+                                             No data yet
+                                        </div>
+                                   ) : (
+                                        byRegion.map((c, i) => (
                                              <BreakdownRow
                                                   key={c.continent}
                                                   label={c.continent}
