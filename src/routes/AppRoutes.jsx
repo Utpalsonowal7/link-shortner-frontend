@@ -10,6 +10,7 @@ import ResetPassword from "../pages/ResetPassword.jsx";
 import Landing from "../pages/Landing.jsx";
 import Links from "../pages/Links.jsx";
 import LinkDetail from "../pages/LinkDetail.jsx";
+import Settings from "../pages/Settings.jsx";
 
 const AppRoutes = () => {
      const { user } = useSelector((state) => state.auth);
@@ -87,6 +88,15 @@ const AppRoutes = () => {
                     element={
                          <ProtectedRoute>
                               <LinkDetail />
+                         </ProtectedRoute>
+                    }
+               />
+
+               <Route
+                    path="/settings"
+                    element={
+                         <ProtectedRoute>
+                              <Settings />
                          </ProtectedRoute>
                     }
                />
